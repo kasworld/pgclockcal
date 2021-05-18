@@ -7,9 +7,9 @@ import time
 import datetime
 
 success, fail = pygame.init()
-if fail > 0 :
-    print("success, fail", success, fail)
-    sys.exit()
+if not pygame.get_init() :
+    print("init success, fail", success, fail)
+    pygame.quit()
 
 screen = pygame.display.set_mode(flags=pygame.FULLSCREEN)
 screenW, screenH = screen.get_size()
