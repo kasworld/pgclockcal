@@ -37,17 +37,17 @@ while 1:
 
     # draw FPS
     txtSuf = smallFt.render("FPS {0:.1f}".format(
-        tick.get_fps()), False, (0, 255, 0))
+        tick.get_fps()), False, (63, 63, 63))
     screen.blit(txtSuf, (0, 0))
 
     # draw Clock
     clockText = time.strftime("%H:%M:%S", time.localtime())
-    txtSuf = bigFt.render(clockText, False, (0, 255, 0))
+    txtSuf = bigFt.render(clockText, False, (255, 255, 255))
     screen.blit(txtSuf, (calcCenter(txtSuf), 0))
 
     # draw calendar date
     dateText = "{0:%Y-%m-%d %a}".format(datetime.datetime.now())
-    txtSuf = midFt.render(dateText, False, (0, 255, 0))
+    txtSuf = midFt.render(dateText, False, (255, 255, 255))
     screen.blit(txtSuf, (calcCenter(txtSuf), screenH/3))
 
     # draw 6 week
@@ -59,7 +59,7 @@ while 1:
     dayH = screenH/16
     for wd in range(7):
         wdStr = "{0:%a}".format((dayIndex + datetime.timedelta(days=wd)))
-        txtSuf = smallFt.render(wdStr, False, (0, 255, 0))
+        txtSuf = smallFt.render(wdStr, False, (255, 255, 255))
         screen.blit(txtSuf, (wd*dayW + calcCenter(txtSuf), screenH/2))
 
     for week in range(6):
