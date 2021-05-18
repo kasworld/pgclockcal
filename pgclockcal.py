@@ -6,7 +6,10 @@ import sys
 import time
 import datetime
 
-pygame.init()
+success, fail = pygame.init()
+if fail > 0 :
+    print("success, fail", success, fail)
+    sys.exit()
 
 screen = pygame.display.set_mode(flags=pygame.FULLSCREEN)
 screenW, screenH = screen.get_size()
