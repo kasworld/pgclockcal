@@ -7,23 +7,28 @@ import time
 import datetime
 
 success, fail = pygame.init()
-if not pygame.get_init() :
+if not pygame.get_init():
     print("init success, fail", success, fail)
     pygame.quit()
 
-screen = pygame.display.set_mode(flags=pygame.FULLSCREEN)
+# screen = pygame.display.set_mode(flags=pygame.FULLSCREEN) # not work on linux
+screen = pygame.display.set_mode()
 screenW, screenH = screen.get_size()
+dayW = screenW/14
+dayH = screenH/12
+calendarBaseY = screenH - dayH*7
+calendarBaseX = screenW - dayW*7
 
-bigFt = pygame.font.SysFont(None, int(screenH/2))
-midFt = pygame.font.SysFont(None, int(screenH/4))
-smallFt = pygame.font.SysFont(None, int(screenH/12))
+bigFt = pygame.font.SysFont(None, int(screenH/1.7))
+midFt = pygame.font.SysFont(None, int(screenH/6.6))
+smallFt = pygame.font.SysFont(None, int(screenH/11))
 
 tick = pygame.time.Clock()
 
 
-def calcCenter(suf):
+def calcCenter(suf, refW=screenW):
     sufW = suf.get_width()
-    return (screenW-sufW)/2
+    return (refW-sufW)/2
 
 
 while 1:
@@ -41,7 +46,7 @@ while 1:
     # draw FPS
     txtSuf = smallFt.render("FPS {0:.1f}".format(
         tick.get_fps()), False, (63, 63, 63))
-    screen.blit(txtSuf, (0, 0))
+    screen.blit(txtSuf, (0, screenH-dayH))
 
     # draw Clock
     clockText = time.strftime("%H:%M:%S", time.localtime())
@@ -51,19 +56,18 @@ while 1:
     # draw calendar date
     dateText = "{0:%Y-%m-%d %a}".format(datetime.datetime.now())
     txtSuf = midFt.render(dateText, False, (255, 255, 255))
-    screen.blit(txtSuf, (calcCenter(txtSuf), screenH/3))
+    screen.blit(txtSuf, ( calcCenter(txtSuf, screenW/2) , screenH/2))
 
-    # draw 6 week
+    # draw 6 week calendar
     today = datetime.datetime.now()
     dayIndex = today + datetime.timedelta(days=(-today.weekday() - 7))
 
-    # draw weed day
-    dayW = screenW/16
-    dayH = screenH/16
+    # draw week day
     for wd in range(7):
         wdStr = "{0:%a}".format((dayIndex + datetime.timedelta(days=wd)))
         txtSuf = smallFt.render(wdStr, False, (255, 255, 255))
-        screen.blit(txtSuf, (wd*dayW + calcCenter(txtSuf), screenH/2))
+        screen.blit(txtSuf, (calendarBaseX + wd*dayW +
+                    calcCenter(txtSuf, dayW), calendarBaseY))
 
     for week in range(6):
         for wd in range(7):
@@ -80,8 +84,8 @@ while 1:
                 else:
                     txtSuf = smallFt.render(dStr, False, (255, 255, 255))
 
-            screen.blit(txtSuf, (wd*dayW + calcCenter(txtSuf),
-                        screenH/2 + dayH*(week+1)))
+            screen.blit(txtSuf, (calendarBaseX + wd*dayW + calcCenter(txtSuf, dayW),
+                        calendarBaseY + dayH*(week+1)))
 
             dayIndex += datetime.timedelta(days=1)
 
