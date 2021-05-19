@@ -56,7 +56,7 @@ while 1:
     # draw calendar date
     dateText = "{0:%Y-%m-%d %a}".format(datetime.datetime.now())
     txtSuf = midFt.render(dateText, False, (255, 255, 255))
-    screen.blit(txtSuf, ( calcCenter(txtSuf, screenW/2) , screenH/2))
+    screen.blit(txtSuf, (calcCenter(txtSuf, screenW/2), screenH/2))
 
     # draw 6 week calendar
     today = datetime.datetime.now()
