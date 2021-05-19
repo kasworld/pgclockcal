@@ -45,7 +45,7 @@ while 1:
 
     # draw FPS
     txtSuf = smallFt.render("FPS {0:.1f}".format(
-        tick.get_fps()), False, (63, 63, 63))
+        tick.get_fps()), False, (7, 7, 7))
     screen.blit(txtSuf, (0, screenH-dayH))
 
     # draw Clock
