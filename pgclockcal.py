@@ -7,12 +7,10 @@ import time
 import datetime
 
 success, fail = pygame.init()
-if not pygame.get_init():
-    print("init success, fail", success, fail)
-    pygame.quit()
 
 # screen = pygame.display.set_mode(flags=pygame.FULLSCREEN) # not work on linux
-screen = pygame.display.set_mode()
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+# screen = pygame.display.set_mode()
 screenW, screenH = screen.get_size()
 dayW = screenW/14
 dayH = screenH/12
