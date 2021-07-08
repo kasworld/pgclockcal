@@ -23,6 +23,17 @@ def getNaverWeather():
     return current, current_state, location, weatherUpdate
 
 
+def printUsage():
+    print("""
+    use system font
+        python pgclockcal.py
+    use custom font 
+        python pgclockcal.py fontfilename bigfontrate midfontrate smallfontrate 
+    example 
+        python pgclockcal.py NanumGothicBold.ttf 5.0 1.0 0.9
+    """)
+
+
 success, fail = pygame.init()
 
 # screen = pygame.display.set_mode(flags=pygame.FULLSCREEN) # not work on linux
@@ -34,9 +45,21 @@ dayH = screenH/12
 calendarBaseY = screenH - dayH*7
 calendarBaseX = screenW - dayW*7 - dayW/4
 
-bigFt = pygame.font.SysFont(None, int(screenH/1.7))
-midFt = pygame.font.SysFont(None, int(screenH/6.6))
-smallFt = pygame.font.SysFont(None, int(screenH/11))
+
+if len(sys.argv) == 5:
+    # ftfilename = "NanumGothicBold.ttf" 5.0, 1.0 0.9
+    ftfilename = sys.argv[1]
+    bigRate = float(sys.argv[2])
+    midRate = float(sys.argv[3])
+    smallRate = float(sys.argv[4])
+    bigFt = pygame.font.Font(ftfilename, int(dayH*bigRate))
+    midFt = pygame.font.Font(ftfilename, int(dayH*midRate))
+    smallFt = pygame.font.Font(ftfilename, int(dayH*smallRate))
+else:
+    printUsage()
+    bigFt = pygame.font.SysFont(None, int(dayH*7))
+    midFt = pygame.font.SysFont(None, int(dayH*1.7))
+    smallFt = pygame.font.SysFont(None, int(dayH*1.0))
 
 tick = pygame.time.Clock()
 
@@ -70,7 +93,7 @@ def drawClockCal():
     screen.blit(txtSuf, (calcCenter(txtSuf, screenW/2), screenH/2))
 
     # draw weather
-    weatherText = current
+    weatherText = f"{location} {current} {current_state}"
     txtSuf = midFt.render(weatherText, False, (255, 255, 255))
     screen.blit(txtSuf, (calcCenter(txtSuf, screenW/2), screenH/2+dayH*2))
 
