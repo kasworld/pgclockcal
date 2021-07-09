@@ -15,12 +15,22 @@ def getNaverWeather():
     soup = BeautifulSoup(source.content, "html.parser")
 
     group_weather = soup.find('div', {'class': 'group_weather'})
+    # print(group_weather)
     current_box = group_weather.find('div', {'class': 'current_box'})
     current = current_box.find('strong', {'class': 'current'}).text
     current_state = current_box.find('strong', {'class': 'state'}).text
     location = group_weather.find('span', {'class': 'location'}).text
+
+    # <ul class="list_air">
+    # <li class="air_item">미세<strong class="state state_good">좋음</strong></li>
+    # <li class="air_item">초미세<strong class="state state_normal">보통</strong></li>
+    # </ul>
+    listair = group_weather.find('ul', {'class': 'list_air'})
+    airlist = listair.find_all('li', {'class': 'air_item'})
+    air_fine, air_fine2 = airlist[0].text, airlist[1].text
+
     weatherUpdate = datetime.datetime.now()
-    return current, current_state, location, weatherUpdate
+    return current, current_state, location, air_fine, air_fine2, weatherUpdate
 
 
 def printUsage():
@@ -63,7 +73,7 @@ else:
 
 tick = pygame.time.Clock()
 
-current, current_state, location, weatherUpdate = getNaverWeather()
+current, current_state, location, air_fine, air_fine2, weatherUpdate = getNaverWeather()
 
 
 def calcCenter(suf, refW=screenW):
@@ -95,12 +105,17 @@ def drawClockCal():
     # draw weather1
     weatherText = f"{location} {current}"
     txtSuf = midFt.render(weatherText, False, (255, 255, 255))
-    screen.blit(txtSuf, (calcCenter(txtSuf, screenW/2), screenH/2+dayH*1.5))
+    screen.blit(txtSuf, (calcCenter(txtSuf, screenW/2), screenH/2+dayH*1.3))
 
     # draw weather2
     weatherText = f"{current_state}"
     txtSuf = midFt.render(weatherText, False, (255, 255, 255))
-    screen.blit(txtSuf, (calcCenter(txtSuf, screenW/2), screenH/2+dayH*3))
+    screen.blit(txtSuf, (calcCenter(txtSuf, screenW/2), screenH/2+dayH*2.6))
+
+    # draw weather3
+    weatherText = f"{air_fine} {air_fine2}"
+    txtSuf = midFt.render(weatherText, False, (255, 255, 255))
+    screen.blit(txtSuf, (calcCenter(txtSuf, screenW/2), screenH/2+dayH*3.9))
 
     # draw 6 week calendar
     today = datetime.datetime.now()
@@ -145,5 +160,5 @@ while 1:
 
     tick.tick(2)
     if datetime.datetime.now() - weatherUpdate > datetime.timedelta(minutes=10):
-        current, current_state, location, weatherUpdate = getNaverWeather()
+        current, current_state, location, air_fine, air_fine2, weatherUpdate = getNaverWeather()
     drawClockCal()
