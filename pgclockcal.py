@@ -92,10 +92,15 @@ def drawClockCal():
     txtSuf = midFt.render(dateText, False, (255, 255, 255))
     screen.blit(txtSuf, (calcCenter(txtSuf, screenW/2), screenH/2))
 
-    # draw weather
-    weatherText = f"{location} {current} {current_state}"
+    # draw weather1
+    weatherText = f"{location} {current}"
     txtSuf = midFt.render(weatherText, False, (255, 255, 255))
-    screen.blit(txtSuf, (calcCenter(txtSuf, screenW/2), screenH/2+dayH*2))
+    screen.blit(txtSuf, (calcCenter(txtSuf, screenW/2), screenH/2+dayH*1.5))
+
+    # draw weather2
+    weatherText = f"{current_state}"
+    txtSuf = midFt.render(weatherText, False, (255, 255, 255))
+    screen.blit(txtSuf, (calcCenter(txtSuf, screenW/2), screenH/2+dayH*3))
 
     # draw 6 week calendar
     today = datetime.datetime.now()
