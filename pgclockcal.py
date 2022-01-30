@@ -37,6 +37,33 @@ def getNaverWeather():
         return "internet", "connection",  "no",   "retry", "in 1 min", datetime.datetime.now() - datetime.timedelta(minutes=9)
 
 
+def getNaverWeather2():
+    try:
+        source = requests.get('https://www.naver.com/')
+        soup = BeautifulSoup(source.content, "html.parser")
+
+        group_weather = soup.find('div', {'class': 'group_weather'})
+        # print(group_weather)
+        current_box = group_weather.find('div', {'class': 'current_box'})
+        current = current_box.find('strong', {'class': 'current'}).text
+        current_state = current_box.find('strong', {'class': 'state'}).text
+        location = group_weather.find('span', {'class': 'location'}).text
+
+        # <ul class="list_air">
+        # <li class="air_item">미세<strong class="state state_good">좋음</strong></li>
+        # <li class="air_item">초미세<strong class="state state_normal">보통</strong></li>
+        # </ul>
+        listair = group_weather.find('ul', {'class': 'list_air'})
+        airlist = listair.find_all('li', {'class': 'air_item'})
+        air_fine, air_fine2 = airlist[0].text, airlist[1].text
+
+        weatherUpdate = datetime.datetime.now()
+        return current, current_state, location, air_fine, air_fine2, weatherUpdate
+    except:
+        # return err info and retry after 1 min
+        return "internet", "connection",  "no",   "retry", "in 1 min", datetime.datetime.now() - datetime.timedelta(minutes=9)
+
+
 def printUsage():
     print("""
     use system font
@@ -85,6 +112,31 @@ def calcCenter(suf, refW=screenW):
     return (refW-sufW)/2
 
 
+clockColor = (255, 255, 255)
+calendarColor = (255, 255, 255)
+weatherColor = (255, 255, 255)
+monthweekColor = (255, 255, 255)
+otherMonthColorList = (
+    (127, 127, 127),  # monday
+    (127, 127, 127),
+    (127, 127, 127),
+    (127, 127, 127),
+    (127, 127, 127),
+    (32, 32, 127),  # saturday
+    (127, 0, 0),  # sunday
+)
+todayColor = (255, 255, 0)
+weekdayColorList = (
+    (255, 255, 255),  # monday
+    (255, 255, 255),
+    (255, 255, 255),
+    (255, 255, 255),
+    (255, 255, 255),
+    (32, 32, 255),  # saturday
+    (255, 0, 0),  # sunday
+)
+
+
 def drawClockCal():
     screen.fill((0, 0, 0))
 
@@ -98,27 +150,27 @@ def drawClockCal():
 
     # draw Clock
     clockText = time.strftime("%H:%M:%S", time.localtime())
-    txtSuf = bigFt.render(clockText, False, (255, 255, 255))
+    txtSuf = bigFt.render(clockText, False, clockColor)
     screen.blit(txtSuf, (calcCenter(txtSuf), 0))
 
     # draw calendar date
     dateText = "{0:%Y-%m-%d %a}".format(datetime.datetime.now())
-    txtSuf = midFt.render(dateText, False, (255, 255, 255))
+    txtSuf = midFt.render(dateText, False, calendarColor)
     screen.blit(txtSuf, (calcCenter(txtSuf, screenW/2), screenH/2))
 
     # draw weather1
     weatherText = f"{location} {current}"
-    txtSuf = midFt.render(weatherText, False, (255, 255, 255))
+    txtSuf = midFt.render(weatherText, False, weatherColor)
     screen.blit(txtSuf, (calcCenter(txtSuf, screenW/2), screenH/2+dayH*1.3))
 
     # draw weather2
     weatherText = f"{current_state}"
-    txtSuf = midFt.render(weatherText, False, (255, 255, 255))
+    txtSuf = midFt.render(weatherText, False, weatherColor)
     screen.blit(txtSuf, (calcCenter(txtSuf, screenW/2), screenH/2+dayH*2.6))
 
     # draw weather3
     weatherText = f"{air_fine} {air_fine2}"
-    txtSuf = midFt.render(weatherText, False, (255, 255, 255))
+    txtSuf = midFt.render(weatherText, False, weatherColor)
     screen.blit(txtSuf, (calcCenter(txtSuf, screenW/2), screenH/2+dayH*3.9))
 
     # draw 6 week calendar
@@ -128,7 +180,7 @@ def drawClockCal():
     # draw week day
     for wd in range(7):
         wdStr = "{0:%a}".format((dayIndex + datetime.timedelta(days=wd)))
-        txtSuf = smallFt.render(wdStr, False, (255, 255, 255))
+        txtSuf = smallFt.render(wdStr, False, monthweekColor)
         screen.blit(txtSuf, (calendarBaseX + wd*dayW +
                     calcCenter(txtSuf, dayW), calendarBaseY))
 
@@ -136,16 +188,14 @@ def drawClockCal():
         for wd in range(7):
             dStr = "{0:%d}".format(dayIndex)
             if dayIndex.month != today.month:
-                txtSuf = smallFt.render(dStr, False, (127, 127, 127))
+                txtSuf = smallFt.render(
+                    dStr, False, otherMonthColorList[dayIndex.weekday()])
             else:
                 if dayIndex.day == today.day:
-                    txtSuf = smallFt.render(dStr, False, (255, 255, 0))
-                elif dayIndex.weekday() == 5:  # saturday
-                    txtSuf = smallFt.render(dStr, False, (0, 0, 255))
-                elif dayIndex.weekday() == 6:  # sunday
-                    txtSuf = smallFt.render(dStr, False, (255, 0, 0))
+                    txtSuf = smallFt.render(dStr, False, todayColor)
                 else:
-                    txtSuf = smallFt.render(dStr, False, (255, 255, 255))
+                    txtSuf = smallFt.render(
+                        dStr, False, weekdayColorList[dayIndex.weekday()])
 
             screen.blit(txtSuf, (calendarBaseX + wd*dayW + calcCenter(txtSuf, dayW),
                         calendarBaseY + dayH*(week+1)))
